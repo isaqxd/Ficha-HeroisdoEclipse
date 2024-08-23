@@ -2118,38 +2118,83 @@ local function constructNew_Herois_Eclipse()
 
     obj._e_event2 = obj.button1:addEventListener("onClick",
         function (event)
-            local bonus = tonumber(sheet.graduacao_forca);
-                            local converter = false;
-                            if (bonus >= 0)then
-            				sheet.graduacao_forca = bonus;
-                            else
-                            bonus = bonus*(-1);
-                            converter = true;
-                            end;
-                            
-                            local personagem = Firecast.getPersonagemDe(sheet);
-                            local auxiliar = (bonus+1);
-                            local auxiliar2 = (auxiliar .. "d20");
-                            
-                            if (personagem ~= nil) then
-                            local mesa = personagem.mesa;
-            
-                            if ((personagem.dono == mesa.meuJogador) or (mesa.meuJogador.isMestre)) then
-                            local rolagem = Firecast.interpretarRolagem(sheet.status_forca);
-            
-                            if not rolagem.possuiAlgumDado then
-                            rolagem = Firecast.interpretarRolagem(auxiliar2):concatenar(rolagem);
-                            end; 
-                            local mesaDoPersonagem = Firecast.getMesaDe(sheet);
-            
-                            if mesaDoPersonagem ~= nil and bonus >= 0 and converter == false then
-                                mesaDoPersonagem.activeChat:rolarDados(rolagem, "Rolagem positiva de força do (a) " .. (sheet.CODINOME or "Indivíduo(a)"));
-                            else
-                                mesaDoPersonagem.activeChat:rolarDados(rolagem, "Rolagem negativa de força do (a) " .. (sheet.CODINOME or "Indivíduo(a)"));
-                            
-                            end;
-                            end;
-                            end;
+            local bonus = tonumber(sheet.graduacao_forca) or 0
+                                local converter = false
+                    
+                                if bonus < 0 then
+                                    bonus = -bonus
+                                    converter = true
+                                end
+                    
+                                local personagem = Firecast.getPersonagemDe(sheet)
+                                local auxiliar = (bonus + 1)
+                                local auxiliar2 = (auxiliar .. "d20")
+                                local soma_atq
+                                local aux_atq = {}
+                    
+                                if personagem then
+                                local mesa = personagem.mesa
+                                if (personagem.dono == mesa.meuJogador) or (mesa.meuJogador.isMestre) then
+                                local rolagem = Firecast.interpretarRolagem(sheet.status_forca)
+                                if not rolagem.possuiAlgumDado then
+                                       rolagem = Firecast.interpretarRolagem(auxiliar2):concatenar(rolagem) end
+                                local mesaDoPersonagem = Firecast.getMesaDe(sheet)
+                                if mesaDoPersonagem then
+                                local promise
+                                if bonus == 0 then
+                                    mensagem = "[§K1]Força de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                elseif bonus >= 0 and not converter then
+                                    mensagem = "[§K3]Vantagem em Força de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                else
+                                    mensagem = "[§K5]Desvantagem em Força de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                end
+                    
+                                promise = mesaDoPersonagem.chat:asyncRoll(rolagem, mensagem)
+                    
+                                local _, rollObject = await(promise)
+                    
+                                for i = 1, #rollObject.ops do
+                                    local op = rollObject.ops[i]
+                                    if op.tipo == "dado" then
+                                        for j = 1, #op.resultados do
+                                            aux_atq[#aux_atq + 1] = op.resultados[j]
+                                        end
+                                    elseif op.tipo == "imediato" then
+                                        soma_atq = op.valor or 0
+                                    end
+                                end
+                    
+                                local function bubbleSortAscending(t)
+                                    local len = #t
+                                    for i = 1, len do
+                                        for j = 1, len - i do
+                                            if t[j] > t[j + 1] then
+                                                t[j], t[j + 1] = t[j + 1], t[j]
+                                            end
+                                        end
+                                    end
+                                end
+                    
+                                local function bubbleSortDescending(t)
+                                local len = #t
+                                for i = 1, len do
+                                for j = 1, len - i do
+                                    if t[j] < t[j + 1] then
+                                    t[j], t[j + 1] = t[j + 1], t[j] end
+                                end
+                                end
+                                end
+                    
+                                    if converter then
+                                    bubbleSortAscending(aux_atq)
+                                    else
+                                    bubbleSortDescending(aux_atq) end
+                    
+                                local resultado_final = math.floor((tonumber(aux_atq[1]) or 0) + (tonumber(soma_atq) or 0))
+                                    mesaDoPersonagem.chat:enviarMensagem("[§K10]Resultado: [§K1]" .. resultado_final .. " (" .. math.floor(tonumber(aux_atq[1]) or 0) .. " + " .. math.floor(tonumber(soma_atq) or 0) .. ")")
+                                end
+                                end
+                                end
         end);
 
     obj._e_event3 = obj.dataLink3:addEventListener("onChange",
@@ -2178,38 +2223,83 @@ local function constructNew_Herois_Eclipse()
 
     obj._e_event5 = obj.button2:addEventListener("onClick",
         function (event)
-            local bonus = tonumber(sheet.graduacao_agilidade);
-                            local converter = false;
-                            if (bonus >= 0)then								
-            				sheet.graduacao_agilidade = bonus;
-                            else
-                            bonus = bonus*(-1);
-                            converter = true;
-                            end;
-            
-                            
-                            local personagem = Firecast.getPersonagemDe(sheet);
-                            local auxiliar = (bonus+1);
-                            local auxiliar2 = (auxiliar .. "d20");                        
-                            
-                            if (personagem ~= nil) then
-                            local mesa = personagem.mesa;
+            local bonus = tonumber(sheet.graduacao_agilidade) or 0
+                                local converter = false
                     
-                            if ((personagem.dono == mesa.meuJogador) or (mesa.meuJogador.isMestre)) then
-                            local rolagem = Firecast.interpretarRolagem(sheet.status_agilidade);
-            
-                            if not rolagem.possuiAlgumDado then
-                            rolagem = Firecast.interpretarRolagem(auxiliar2):concatenar(rolagem);
-                            end; 
-                            local mesaDoPersonagem = Firecast.getMesaDe(sheet);
+                                if bonus < 0 then
+                                    bonus = -bonus
+                                    converter = true
+                                end
                     
-                            if mesaDoPersonagem ~= nil and bonus >= 0 and converter == false then
-                                mesaDoPersonagem.activeChat:rolarDados(rolagem, "Rolagem positiva de agilidade do (a) " .. (sheet.CODINOME or "Indivíduo(a)"));
-                            else
-                                mesaDoPersonagem.activeChat:rolarDados(rolagem, "Rolagem negativa de agilidade do (a) " .. (sheet.CODINOME or "Indivíduo(a)"));
-                            end;
-                            end;
-                            end;
+                                local personagem = Firecast.getPersonagemDe(sheet)
+                                local auxiliar = (bonus + 1)
+                                local auxiliar2 = (auxiliar .. "d20")
+                                local soma_atq
+                                local aux_atq = {}
+                    
+                                if personagem then
+                                local mesa = personagem.mesa
+                                if (personagem.dono == mesa.meuJogador) or (mesa.meuJogador.isMestre) then
+                                local rolagem = Firecast.interpretarRolagem(sheet.status_agilidade)
+                                if not rolagem.possuiAlgumDado then
+                                       rolagem = Firecast.interpretarRolagem(auxiliar2):concatenar(rolagem) end
+                                local mesaDoPersonagem = Firecast.getMesaDe(sheet)
+                                if mesaDoPersonagem then
+                                local promise
+                                if bonus == 0 then
+                                    mensagem = "[§K1]Agilidade de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                elseif bonus >= 0 and not converter then
+                                    mensagem = "[§K3]Vantagem em Agilidade de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                else
+                                    mensagem = "[§K5]Desvantagem em Agilidade de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                end
+                    
+                                promise = mesaDoPersonagem.chat:asyncRoll(rolagem, mensagem)
+                    
+                                local _, rollObject = await(promise)
+                    
+                                for i = 1, #rollObject.ops do
+                                    local op = rollObject.ops[i]
+                                    if op.tipo == "dado" then
+                                        for j = 1, #op.resultados do
+                                            aux_atq[#aux_atq + 1] = op.resultados[j]
+                                        end
+                                    elseif op.tipo == "imediato" then
+                                        soma_atq = op.valor or 0
+                                    end
+                                end
+                    
+                                local function bubbleSortAscending(t)
+                                    local len = #t
+                                    for i = 1, len do
+                                        for j = 1, len - i do
+                                            if t[j] > t[j + 1] then
+                                                t[j], t[j + 1] = t[j + 1], t[j]
+                                            end
+                                        end
+                                    end
+                                end
+                    
+                                local function bubbleSortDescending(t)
+                                local len = #t
+                                for i = 1, len do
+                                for j = 1, len - i do
+                                    if t[j] < t[j + 1] then
+                                    t[j], t[j + 1] = t[j + 1], t[j] end
+                                end
+                                end
+                                end
+                    
+                                    if converter then
+                                    bubbleSortAscending(aux_atq)
+                                    else
+                                    bubbleSortDescending(aux_atq) end
+                    
+                                local resultado_final = math.floor((tonumber(aux_atq[1]) or 0) + (tonumber(soma_atq) or 0))
+                                    mesaDoPersonagem.chat:enviarMensagem("[§K10]Resultado: [§K1]" .. resultado_final .. " (" .. math.floor(tonumber(aux_atq[1]) or 0) .. " + " .. math.floor(tonumber(soma_atq) or 0) .. ")")
+                                end
+                                end
+                                end
         end);
 
     obj._e_event6 = obj.dataLink5:addEventListener("onChange",
@@ -2721,39 +2811,83 @@ local function constructNew_Herois_Eclipse()
 
     obj._e_event25 = obj.button9:addEventListener("onClick",
         function (event)
-            local bonus = tonumber(sheet.pericia_acrobacia);
-                            local converter = false;
-                            if (bonus >= 0)then								
-            				sheet.pericia_acrobacia = bonus;
-                            else
-                            bonus = bonus*(-1);
-                            converter = true;
-                            end;
-            
-                            
-                            local personagem = Firecast.getPersonagemDe(sheet);
-                            local auxiliar = (bonus+1);
-                            local auxiliar2 = (auxiliar .. "d6");                        
-                            
-                            if (personagem ~= nil) then
-                            local mesa = personagem.mesa;
+            local bonus = tonumber(sheet.pericia_acrobacia) or 0
+                                local converter = false
                     
-                            if ((personagem.dono == mesa.meuJogador) or (mesa.meuJogador.isMestre)) then
-                            local rolagem = Firecast.interpretarRolagem(sheet.pericia_acrobacia);
-            
-                            if not rolagem.possuiAlgumDado then
-                            rolagem = Firecast.interpretarRolagem(auxiliar2);
-                            end; 
-                            local mesaDoPersonagem = Firecast.getMesaDe(sheet);
+                                if bonus < 0 then
+                                    bonus = -bonus
+                                    converter = true
+                                end
                     
-                            if mesaDoPersonagem ~= nil and bonus >= 0 and converter == false then
-                                mesaDoPersonagem.activeChat:rolarDados(rolagem, "Rolagem positiva de acrobacia do (a) " .. (sheet.CODINOME or "Indivíduo(a)"));
-                            else
-                                mesaDoPersonagem.activeChat:rolarDados(rolagem, "Rolagem negativa de acrobacia do (a) " .. (sheet.CODINOME or "Indivíduo(a)"));
-                            
-                            end;
-                            end;
-                            end;
+                                local personagem = Firecast.getPersonagemDe(sheet)
+                                local auxiliar = (bonus + 1)
+                                local auxiliar2 = (auxiliar .. "d20")
+                                local soma_atq
+                                local aux_atq = {}
+                    
+                                if personagem then
+                                local mesa = personagem.mesa
+                                if (personagem.dono == mesa.meuJogador) or (mesa.meuJogador.isMestre) then
+                                local rolagem = Firecast.interpretarRolagem(sheet.pericia_acrobacia)
+                                if not rolagem.possuiAlgumDado then
+                                       rolagem = Firecast.interpretarRolagem(auxiliar2):concatenar(rolagem) end
+                                local mesaDoPersonagem = Firecast.getMesaDe(sheet)
+                                if mesaDoPersonagem then
+                                local promise
+                                if bonus == 0 then
+                                    mensagem = "[§K1]Acrobacia de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                elseif bonus >= 0 and not converter then
+                                    mensagem = "[§K3]Vantagem em Acrobacia de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                else
+                                    mensagem = "[§K5]Desvantagem em Acrobacia de " .. (sheet.CODINOME or "Indivíduo(a)")
+                                end
+                    
+                                promise = mesaDoPersonagem.chat:asyncRoll(rolagem, mensagem)
+                    
+                                local _, rollObject = await(promise)
+                    
+                                for i = 1, #rollObject.ops do
+                                    local op = rollObject.ops[i]
+                                    if op.tipo == "dado" then
+                                        for j = 1, #op.resultados do
+                                            aux_atq[#aux_atq + 1] = op.resultados[j]
+                                        end
+                                    elseif op.tipo == "imediato" then
+                                        soma_atq = op.valor or 0
+                                    end
+                                end
+                    
+                                --local function bubbleSortAscending(t)
+                                --    local len = #t
+                                  --  for i = 1, len do
+                                    --    for j = 1, len - i do
+                                      --      if t[j] > t[j + 1] then
+                                        --        t[j], t[j + 1] = t[j + 1], t[j]
+                                       --     end
+                                    --    end
+                                 --   end
+                               --\ end
+                    
+                            --    local function bubbleSortDescending(t)
+                            --    local len = #t
+                            --    for i = 1, len do
+                            --    for j = 1, len - i do
+                            --        if t[j] < t[j + 1] then
+                            --        t[j], t[j + 1] = t[j + 1], t[j] end
+                            --    end
+                            --    end
+                            --    end
+                    
+                              --      if converter then
+                              --      bubbleSortAscending(aux_atq)
+                              --      else
+                              --      bubbleSortDescending(aux_atq) end--
+                    
+                                local resultado_final = math.floor((tonumber(aux_atq[1]) or 0) + (tonumber(soma_atq) or 0))
+                                    mesaDoPersonagem.chat:enviarMensagem("[§K10]Resultado: [§K1]" .. resultado_final .. " (" .. math.floor(tonumber(aux_atq[1]) or 0) .. " + " .. math.floor(tonumber(soma_atq) or 0) .. ")")
+                                end
+                                end
+                                end
         end);
 
     obj._e_event26 = obj.dataLink18:addEventListener("onChange",
