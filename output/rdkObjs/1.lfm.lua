@@ -2453,8 +2453,6 @@ local function constructNew_frmHEROIS1_svg()
                                     mensagem = "[§K1]Acrobacia de " .. (sheet.CODINOME or "Indivíduo(a)")
                                 elseif bonus >= 0 and not converter then
                                     mensagem = "[§K3]Vantagem em Acrobacia de " .. (sheet.CODINOME or "Indivíduo(a)")
-                                else
-                                    mensagem = "[§K5]Desvantagem em Acrobacia de " .. (sheet.CODINOME or "Indivíduo(a)")
                                 end
                     
                                 promise = mesaDoPersonagem.chat:asyncRoll(rolagem, mensagem)
@@ -2471,35 +2469,7 @@ local function constructNew_frmHEROIS1_svg()
                                         soma_atq = op.valor or 0
                                     end
                                 end
-                    
-                                --local function bubbleSortAscending(t)
-                                --    local len = #t
-                                  --  for i = 1, len do
-                                    --    for j = 1, len - i do
-                                      --      if t[j] > t[j + 1] then
-                                        --        t[j], t[j + 1] = t[j + 1], t[j]
-                                       --     end
-                                    --    end
-                                 --   end
-                               --\ end
-                    
-                            --    local function bubbleSortDescending(t)
-                            --    local len = #t
-                            --    for i = 1, len do
-                            --    for j = 1, len - i do
-                            --        if t[j] < t[j + 1] then
-                            --        t[j], t[j + 1] = t[j + 1], t[j] end
-                            --    end
-                            --    end
-                            --    end
-                    
-                              --      if converter then
-                              --      bubbleSortAscending(aux_atq)
-                              --      else
-                              --      bubbleSortDescending(aux_atq) end--
-                    
-                                local resultado_final = math.floor((tonumber(aux_atq[1]) or 0) + (tonumber(soma_atq) or 0))
-                                    mesaDoPersonagem.chat:enviarMensagem("[§K10]Resultado: [§K1]" .. resultado_final .. " (" .. math.floor(tonumber(aux_atq[1]) or 0) .. " + " .. math.floor(tonumber(soma_atq) or 0) .. ")")
+            
                                 end
                                 end
                                 end
