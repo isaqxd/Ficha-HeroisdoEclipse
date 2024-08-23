@@ -2436,7 +2436,7 @@ local function constructNew_frmHEROIS1_svg()
                     
                                 local personagem = Firecast.getPersonagemDe(sheet)
                                 local auxiliar = (bonus + 1)
-                                local auxiliar2 = (auxiliar .. "d20")
+                                local auxiliar2 = (auxiliar .. "d6")
                                 local soma_atq
                                 local aux_atq = {}
                     
