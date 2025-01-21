@@ -1,7 +1,10 @@
 MODELO DE FICHA PERSONALIZADO PARA O RRPG FIRECAST
 
-Creditos ao VinnyAmbesek pela ficha multi-aba e por ter upado mutantes e malfeitores para ter como base.
+Ficha criada para automatizar o sistema Herois do Eclipse.
 
-Lobodosgames pela ajuda a entender a logica e programação da ficha.
+Projeto: Ficha Auto
 
-Overlordnathaniel e Supercao pela ajuda no front-end da ficha.
+Front-end: isaqxd
+Back-end: isaqxd e lobodosgames
+Revisão: isaqxd
+Teste em aplicação: Overlordhu3
