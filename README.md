@@ -1,10 +1,10 @@
-MODELO DE FICHA PERSONALIZADO PARA O RRPG FIRECAST
+MODELO DE FICHA PERSONALIZADO PARA O RRPG
 
 Ficha criada para automatizar o sistema Herois do Eclipse.
 
 Projeto: Ficha Auto
 
 Front-end: isaqxd
-Back-end: isaqxd e lobodosgames
+Back-end: isaq, PauloVBNascimento, Renan Lourenço
 Revisão: isaqxd
-Teste em aplicação: Overlordhu3
+Teste em aplicação: Renan Lourenço
